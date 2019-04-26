@@ -1,2 +1,2 @@
 # autoWeb
-Python +selenium自动化测试
+Python3 +selenium+HTMLTestRunnerCN自动化测试
