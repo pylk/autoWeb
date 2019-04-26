@@ -1,0 +1,135 @@
+
+#########################################################
+#      #脚本全局配置入口参数
+#########################################################
+BAIDU:
+  INFO:
+    url: "http://www.baidu.com"
+    user: "寂寞中疯"
+    pass: "haoran2014"
+
+
+#########################################################
+global:
+  corp:
+      url: "http://172.30.200.20:8080/JYSPSC/views/login.jsp"
+      user: "admin"
+      pass: "admin"
+  questionFeedbackName: "自动化创建名称"
+
+
+
+
+  opername: "张家口运营中心" #沈阳运营中心150 张家口运营中心20
+  operSearchKeyWord: "test"  #150性能 汇流箱功率，20 源点
+  monitorSourcePointManageKewWord: "test"  #150性能测试   20 汇流箱功率 test
+  corpSearchKeyWord: "自动化"
+  executer: "http://172.30.201.5:4444/wd/hub"
+  type: "chrome" #phantomjs  chrome firefox
+  host: "local" #remote local
+
+#########################################################
+#      数据连接配置
+#########################################################
+mysqldb:
+  ip: "172.30.200.3"
+  port: "3306"
+  username: "zdkj"
+  password: "zdkj"
+  defaultDB: "zdkj"
+
+#########################################################
+#      数据库查询语句
+#########################################################
+
+dbQueries:
+  statisticSearch:
+    sql: "select a1.*,a2.已映射,a2.未映射 from (select s2.omc_name,
+        count(s1.source_point_id) as '全部源点',
+        count(case when (s1.source_point_state=2) then 2 else NULL end) as '集团',
+        count(case when (s1.source_point_state=1) then 1 else NULL end) as '运管',
+        count(case when (s1.source_point_state=0) then 0 else NULL end) as '不采集'
+        from ds_standard_source_table s1
+        left join ds_operate_manager_centre s2 on s1.omc_id=s2.omc_id
+        group by s2.omc_name) as a1
+        ,
+        (select s2.omc_name,
+        count(case when (s3.mapper_state=1) then 1 else NULL end ) as '已映射',
+        count(case when (s3.mapper_state is null or s3.mapper_state =0 ) then 0 else NULL end ) as '未映射'
+        from ds_operate_manager_centre s2
+        left join ds_standard_source_table s1 on s1.omc_id = s2.omc_id
+        left join ds_hs_code_mapping s3 on s1.source_point_id=s3.source_point_id
+        group by s2.omc_name) as a2
+        where a1.omc_name=a2.omc_name
+        order by a1.运管 desc"
+
+
+#########################################################
+#      独立脚本运行时配置
+#########################################################
+
+#备注运营中心信息，用到时直接复制到oper级别
+zhangjiakou:
+    url: "http://172.30.200.1:8081/ds-web/index.html" #张家口
+    user: "admin"
+    pass: "admin"
+    opername: "张家口运营中心"
+shenyang:
+    url: "http://172.30.200.5:8081/ds-web/index.html" #沈阳
+    user: "admin"
+    pass: "admin"
+    opername: "沈阳运营中心"
+
+#各个脚本细节参数配置
+test_corp_login:
+    url: "http://172.30.200.3:8081/ds-web-gt/index.html#/login"
+    host: "http://about:"
+    browserType: "Chrome"
+    data: [
+            {username: "admin",password: "admin"},
+             {username: "kkk",password: "bbb"}
+             ]
+
+test_oper_login:
+    url: "http://172.30.200.1:8081/ds-web/index.html"
+    host: "http://about:"
+    browserType: "Chrome"
+    data: [
+             {username: "admin",password: "admin"},
+             ]
+
+test_oper_dataSearch:
+    url: "http://172.30.200.1:8081/ds-web/index.html"
+    host: "http://about:"
+    browserType: "Chrome"
+    data: [
+             {sourcename: "自动化"}
+             ]
+
+
+
+
+#########################################################
+#      测试套件运行时配置
+#########################################################
+#脚本运行顺序配置,凡是增删改，顺序应该为添加，修改，删除，保证可以独立或者串联执行
+testSuit:
+    testReport: [
+    "test_baiduLogin.py"
+    ]
+    baseLine: ["test_baiduLogin.py"
+    ]
+    debug: [
+    ######运营中心测
+      "test_baiduLogin",
+      "test_oper_login",
+    ]
+
+    all: [
+      "test_baiduLogin",
+      "test_oper_login",
+    ]
+
+
+
+

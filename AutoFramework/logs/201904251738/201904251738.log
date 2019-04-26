@@ -1,0 +1,4 @@
+2019-04-25 17:38:24,867 - mainlog -84 - INFO - this is info
+2019-04-25 17:38:24,867 - mainlog -86 - WARNING - this is warning
+2019-04-25 17:38:24,867 - mainlog -87 - ERROR - this is error
+2019-04-25 17:38:24,868 - __main__--add -63 - INFO - this is 3+4
